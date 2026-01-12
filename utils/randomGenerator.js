@@ -131,11 +131,86 @@ function generateRandomReview(cosmeticIds) {
   };
 }
 
+function generateRandomAlcohol() {
+  const types = ['Виски', 'Водка', 'Шампанское', 'Ром', 'Джин', 'Коньяк', 'Текила', 'Вино'];
+  const brands = ['Jack Daniel\'s', 'Absolut', 'Moët & Chandon', 'Bacardi', 'Bombay Sapphire', 'Hennessy', 'Jose Cuervo', 'Chivas Regal'];
+  const countries = ['США', 'Швеция', 'Франция', 'Пуэрто-Рико', 'Великобритания', 'Мексика', 'Шотландия', 'Италия'];
+  
+  const countryCount = randomNumber(1, 2);
+  const selectedCountries = [];
+  for (let i = 0; i < countryCount; i++) {
+    const country = countries[randomNumber(0, countries.length - 1)];
+    if (!selectedCountries.includes(country)) {
+      selectedCountries.push(country);
+    }
+  }
+  
+  return {
+    name: `${types[randomNumber(0, types.length - 1)]} ${randomString(6)}`,
+    type: types[randomNumber(0, types.length - 1)],
+    brand: brands[randomNumber(0, brands.length - 1)],
+    price: randomNumber(1000, 20000),
+    alcoholContent: randomNumber(12, 50),
+    inStock: randomBoolean(),
+    releaseDate: randomDate().toISOString(),
+    countries: selectedCountries.length > 0 ? selectedCountries : [countries[0]],
+    description: `Качественный алкогольный напиток от бренда ${brands[randomNumber(0, brands.length - 1)]}`
+  };
+}
+
+function generateRandomDelivery(alcoholIds) {
+  const names = ['Александр', 'Мария', 'Дмитрий', 'Елена', 'Сергей', 'Анна', 'Иван', 'Ольга'];
+  const surnames = ['Иванов', 'Петрова', 'Сидоров', 'Козлова', 'Волков', 'Смирнова', 'Кузнецов', 'Новикова'];
+  const cities = ['Москва', 'Санкт-Петербург', 'Екатеринбург', 'Новосибирск', 'Казань', 'Нижний Новгород'];
+  const streets = ['ул. Ленина', 'пр. Невский', 'ул. Мира', 'ул. Красный проспект', 'ул. Баумана', 'ул. Пушкина'];
+  const notes = ['Доставить до 18:00', 'Требуется проверка возраста', 'Курьер позвонит за час', 'Хрупкий товар', 'Подарочная упаковка'];
+  
+  const customerName = `${names[randomNumber(0, names.length - 1)]} ${surnames[randomNumber(0, surnames.length - 1)]}`;
+  const city = cities[randomNumber(0, cities.length - 1)];
+  const street = streets[randomNumber(0, streets.length - 1)];
+  const deliveryAddress = `г. ${city}, ${street}, д. ${randomNumber(1, 100)}, кв. ${randomNumber(1, 100)}`;
+  
+  const itemCount = randomNumber(1, 3);
+  const items = [];
+  let totalAmount = 0;
+  
+  for (let i = 0; i < itemCount; i++) {
+    const alcoholId = alcoholIds[randomNumber(0, alcoholIds.length - 1)];
+    const quantity = randomNumber(1, 3);
+    const price = randomNumber(1000, 15000);
+    items.push({ alcoholId, quantity, price });
+    totalAmount += price * quantity;
+  }
+  
+  const noteCount = randomNumber(0, 2);
+  const selectedNotes = [];
+  for (let i = 0; i < noteCount; i++) {
+    const note = notes[randomNumber(0, notes.length - 1)];
+    if (!selectedNotes.includes(note)) {
+      selectedNotes.push(note);
+    }
+  }
+  
+  return {
+    orderId: `ORD-${randomString(6).toUpperCase()}`,
+    customerName,
+    customerPhone: `+7 (999) ${randomNumber(100, 999)}-${randomNumber(10, 99)}-${randomNumber(10, 99)}`,
+    deliveryAddress,
+    totalAmount,
+    isDelivered: randomBoolean(),
+    deliveryDate: randomDate().toISOString(),
+    items,
+    deliveryNotes: selectedNotes
+  };
+}
+
 module.exports = {
   generateRandomProduct,
   generateRandomOrder,
   generateRandomCosmetic,
   generateRandomReview,
+  generateRandomAlcohol,
+  generateRandomDelivery,
   randomString,
   randomNumber,
   randomBoolean,

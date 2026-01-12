@@ -1,0 +1,92 @@
+[
+  {
+    "id": "1",
+    "orderId": "ORD-001",
+    "customerName": "Александр Иванов",
+    "customerPhone": "+7 (999) 123-45-67",
+    "deliveryAddress": "г. Москва, ул. Ленина, д. 10, кв. 25",
+    "totalAmount": 3499,
+    "isDelivered": true,
+    "deliveryDate": "2024-01-15T14:30:00.000Z",
+    "items": [
+      {
+        "alcoholId": "1",
+        "quantity": 1,
+        "price": 3499
+      }
+    ],
+    "deliveryNotes": ["Доставить до 18:00", "Требуется проверка возраста"]
+  },
+  {
+    "id": "2",
+    "orderId": "ORD-002",
+    "customerName": "Мария Петрова",
+    "customerPhone": "+7 (999) 234-56-78",
+    "deliveryAddress": "г. Санкт-Петербург, пр. Невский, д. 50, кв. 12",
+    "totalAmount": 3798,
+    "isDelivered": false,
+    "deliveryDate": "2024-01-25T16:00:00.000Z",
+    "items": [
+      {
+        "alcoholId": "2",
+        "quantity": 2,
+        "price": 1899
+      }
+    ],
+    "deliveryNotes": ["Курьер позвонит за час"]
+  },
+  {
+    "id": "3",
+    "orderId": "ORD-003",
+    "customerName": "Дмитрий Сидоров",
+    "customerPhone": "+7 (999) 345-67-89",
+    "deliveryAddress": "г. Екатеринбург, ул. Мира, д. 5, кв. 8",
+    "totalAmount": 12999,
+    "isDelivered": true,
+    "deliveryDate": "2024-01-20T12:00:00.000Z",
+    "items": [
+      {
+        "alcoholId": "3",
+        "quantity": 1,
+        "price": 12999
+      }
+    ],
+    "deliveryNotes": ["Хрупкий товар", "Осторожно при транспортировке"]
+  },
+  {
+    "id": "4",
+    "orderId": "ORD-004",
+    "customerName": "Елена Козлова",
+    "customerPhone": "+7 (999) 456-78-90",
+    "deliveryAddress": "г. Новосибирск, ул. Красный проспект, д. 20, кв. 15",
+    "totalAmount": 2598,
+    "isDelivered": false,
+    "deliveryDate": "2024-01-28T15:30:00.000Z",
+    "items": [
+      {
+        "alcoholId": "4",
+        "quantity": 2,
+        "price": 1299
+      }
+    ],
+    "deliveryNotes": []
+  },
+  {
+    "id": "5",
+    "orderId": "ORD-005",
+    "customerName": "Сергей Волков",
+    "customerPhone": "+7 (999) 567-89-01",
+    "deliveryAddress": "г. Казань, ул. Баумана, д. 30, кв. 42",
+    "totalAmount": 4998,
+    "isDelivered": true,
+    "deliveryDate": "2024-01-18T13:15:00.000Z",
+    "items": [
+      {
+        "alcoholId": "5",
+        "quantity": 2,
+        "price": 2499
+      }
+    ],
+    "deliveryNotes": ["Подарочная упаковка"]
+  }
+]

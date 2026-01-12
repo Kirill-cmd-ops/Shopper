@@ -11,9 +11,12 @@
 - Парсинга тела запроса (body-parser)
 - Обработки ошибок
 
-## Тема проекта: Магазин электроники
+## Темы проекта
 
-Проект реализует REST API для управления товарами и заказами в интернет-магазине электроники.
+Проект реализует REST API для трех интернет-магазинов:
+1. **Магазин электроники** - управление товарами и заказами
+2. **Магазин косметики** - управление косметическими продуктами и отзывами
+3. **Магазин алкоголя** - управление алкогольными напитками и доставками
 
 ### Сущности данных
 
@@ -79,6 +82,139 @@
     }
   ],
   "status": "Доставлен"
+}
+```
+
+### Магазин косметики
+
+#### 3. Косметика (Cosmetics)
+
+Файл: `data/cosmetics.json`
+
+Структура косметического продукта:
+- **id** (string) - уникальный идентификатор продукта
+- **name** (string) - название продукта
+- **brand** (string) - бренд косметики
+- **price** (number) - цена продукта в рублях
+- **inStock** (boolean) - наличие продукта на складе
+- **releaseDate** (Date string) - дата выпуска продукта в формате ISO
+- **ingredients** (Array) - массив ингредиентов продукта
+- **description** (string) - описание продукта
+
+Пример косметического продукта:
+```json
+{
+  "id": "1",
+  "name": "Увлажняющий крем для лица",
+  "brand": "L'Oreal Paris",
+  "price": 1299,
+  "inStock": true,
+  "releaseDate": "2023-03-15T00:00:00.000Z",
+  "ingredients": ["Гиалуроновая кислота", "Витамин E", "Алоэ вера", "Масло жожоба"],
+  "description": "Интенсивное увлажнение на 24 часа для всех типов кожи"
+}
+```
+
+#### 4. Отзывы (Reviews)
+
+Файл: `data/reviews.json`
+
+Структура отзыва:
+- **id** (string) - уникальный идентификатор отзыва
+- **productId** (string) - ID косметического продукта
+- **customerName** (string) - имя клиента, оставившего отзыв
+- **rating** (number) - оценка от 1 до 5
+- **isVerified** (boolean) - подтвержден ли отзыв (верифицированная покупка)
+- **reviewDate** (Date string) - дата отзыва в формате ISO
+- **tags** (Array) - массив тегов отзыва
+- **comment** (string) - текст отзыва
+
+Пример отзыва:
+```json
+{
+  "id": "1",
+  "productId": "1",
+  "customerName": "Анна Смирнова",
+  "rating": 5,
+  "isVerified": true,
+  "reviewDate": "2024-01-10T14:30:00.000Z",
+  "tags": ["Увлажнение", "Качество", "Рекомендую"],
+  "comment": "Отличный крем! Кожа стала мягкой и увлажненной."
+}
+```
+
+### Магазин алкоголя
+
+#### 5. Алкогольные напитки (Alcohol)
+
+Файл: `data/alcohol.json`
+
+Структура алкогольного напитка:
+- **id** (string) - уникальный идентификатор напитка
+- **name** (string) - название напитка
+- **type** (string) - тип алкоголя (виски, водка, шампанское и т.д.)
+- **brand** (string) - бренд напитка
+- **price** (number) - цена напитка в рублях
+- **alcoholContent** (number) - крепость напитка в процентах
+- **inStock** (boolean) - наличие напитка на складе
+- **releaseDate** (Date string) - дата выпуска в формате ISO
+- **countries** (Array) - массив стран производства
+- **description** (string) - описание напитка
+
+Пример алкогольного напитка:
+```json
+{
+  "id": "1",
+  "name": "Jack Daniel's Old No. 7",
+  "type": "Виски",
+  "brand": "Jack Daniel's",
+  "price": 3499,
+  "alcoholContent": 40,
+  "inStock": true,
+  "releaseDate": "2022-05-10T00:00:00.000Z",
+  "countries": ["США", "Теннесси"],
+  "description": "Классический американский виски с мягким вкусом"
+}
+```
+
+#### 6. Доставки (Deliveries)
+
+Файл: `data/deliveries.json`
+
+Структура доставки:
+- **id** (string) - уникальный идентификатор доставки
+- **orderId** (string) - номер заказа
+- **customerName** (string) - имя клиента
+- **customerPhone** (string) - телефон клиента
+- **deliveryAddress** (string) - адрес доставки
+- **totalAmount** (number) - общая сумма заказа в рублях
+- **isDelivered** (boolean) - статус доставки
+- **deliveryDate** (Date string) - дата доставки в формате ISO
+- **items** (Array) - массив товаров в доставке
+  - **alcoholId** (string) - ID алкогольного напитка
+  - **quantity** (number) - количество
+  - **price** (number) - цена за единицу
+- **deliveryNotes** (Array) - массив примечаний к доставке
+
+Пример доставки:
+```json
+{
+  "id": "1",
+  "orderId": "ORD-001",
+  "customerName": "Александр Иванов",
+  "customerPhone": "+7 (999) 123-45-67",
+  "deliveryAddress": "г. Москва, ул. Ленина, д. 10, кв. 25",
+  "totalAmount": 3499,
+  "isDelivered": true,
+  "deliveryDate": "2024-01-15T14:30:00.000Z",
+  "items": [
+    {
+      "alcoholId": "1",
+      "quantity": 1,
+      "price": 3499
+    }
+  ],
+  "deliveryNotes": ["Доставить до 18:00", "Требуется проверка возраста"]
 }
 ```
 
@@ -266,6 +402,300 @@ curl -X PATCH http://localhost:3000/orders/1 \
 **Пример запроса:**
 ```bash
 curl -X DELETE http://localhost:3000/orders/1
+```
+
+### Маршруты для косметики (Cosmetics)
+
+#### GET /cosmetics
+Возвращает список всей косметики.
+
+**Пример запроса:**
+```bash
+curl http://localhost:3000/cosmetics
+```
+
+#### GET /cosmetics/:id
+Возвращает конкретный косметический продукт по его ID.
+
+**Пример запроса:**
+```bash
+curl http://localhost:3000/cosmetics/1
+```
+
+#### POST /cosmetics
+Создает новый косметический продукт. Если тело запроса пустое, генерируются случайные данные.
+
+**Пример запроса с данными:**
+```bash
+curl -X POST http://localhost:3000/cosmetics \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Новая помада",
+    "brand": "MAC Cosmetics",
+    "price": 2499,
+    "inStock": true,
+    "releaseDate": "2024-01-01T00:00:00.000Z",
+    "ingredients": ["Воск карнауба", "Масло ши"],
+    "description": "Матовое покрытие"
+  }'
+```
+
+#### PUT /cosmetics/:id
+Полностью обновляет косметический продукт. Если тело запроса пустое, генерируются случайные данные.
+
+**Пример запроса:**
+```bash
+curl -X PUT http://localhost:3000/cosmetics/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Обновленное название",
+    "brand": "Новый бренд",
+    ...
+  }'
+```
+
+#### PATCH /cosmetics/:id
+Частично обновляет косметический продукт (только указанные поля). Реализация не идемпотентна.
+
+**Пример запроса:**
+```bash
+curl -X PATCH http://localhost:3000/cosmetics/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "price": 1999,
+    "inStock": false
+  }'
+```
+
+#### DELETE /cosmetics/:id
+Удаляет косметический продукт по ID.
+
+**Пример запроса:**
+```bash
+curl -X DELETE http://localhost:3000/cosmetics/1
+```
+
+### Маршруты для отзывов (Reviews)
+
+#### GET /reviews
+Возвращает список всех отзывов.
+
+**Пример запроса:**
+```bash
+curl http://localhost:3000/reviews
+```
+
+#### GET /reviews/:id
+Возвращает конкретный отзыв по его ID.
+
+**Пример запроса:**
+```bash
+curl http://localhost:3000/reviews/1
+```
+
+#### POST /reviews
+Создает новый отзыв. Если тело запроса пустое, генерируются случайные данные.
+
+**Пример запроса с данными:**
+```bash
+curl -X POST http://localhost:3000/reviews \
+  -H "Content-Type: application/json" \
+  -d '{
+    "productId": "1",
+    "customerName": "Анна Иванова",
+    "rating": 5,
+    "isVerified": true,
+    "tags": ["Качество", "Рекомендую"],
+    "comment": "Отличный продукт!"
+  }'
+```
+
+**Примечание:** Если `productId` не указан, выбирается случайный продукт из существующих.
+
+#### PUT /reviews/:id
+Полностью обновляет отзыв. Если тело запроса пустое, генерируются случайные данные.
+
+**Пример запроса:**
+```bash
+curl -X PUT http://localhost:3000/reviews/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rating": 4,
+    "comment": "Обновленный комментарий",
+    ...
+  }'
+```
+
+#### PATCH /reviews/:id
+Частично обновляет отзыв (только указанные поля). Реализация не идемпотентна.
+
+**Пример запроса:**
+```bash
+curl -X PATCH http://localhost:3000/reviews/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rating": 5,
+    "isVerified": true
+  }'
+```
+
+#### DELETE /reviews/:id
+Удаляет отзыв по ID.
+
+**Пример запроса:**
+```bash
+curl -X DELETE http://localhost:3000/reviews/1
+```
+
+### Маршруты для алкоголя (Alcohol)
+
+#### GET /alcohol
+Возвращает список всех алкогольных напитков.
+
+**Пример запроса:**
+```bash
+curl http://localhost:3000/alcohol
+```
+
+#### GET /alcohol/:id
+Возвращает конкретный алкогольный напиток по его ID.
+
+**Пример запроса:**
+```bash
+curl http://localhost:3000/alcohol/1
+```
+
+#### POST /alcohol
+Создает новый алкогольный напиток. Если тело запроса пустое, генерируются случайные данные.
+
+**Пример запроса с данными:**
+```bash
+curl -X POST http://localhost:3000/alcohol \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Новый виски",
+    "type": "Виски",
+    "brand": "Johnnie Walker",
+    "price": 4999,
+    "alcoholContent": 40,
+    "inStock": true,
+    "releaseDate": "2024-01-01T00:00:00.000Z",
+    "countries": ["Шотландия"],
+    "description": "Выдержанный шотландский виски"
+  }'
+```
+
+#### PUT /alcohol/:id
+Полностью обновляет алкогольный напиток. Если тело запроса пустое, генерируются случайные данные.
+
+**Пример запроса:**
+```bash
+curl -X PUT http://localhost:3000/alcohol/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Обновленное название",
+    "type": "Водка",
+    ...
+  }'
+```
+
+#### PATCH /alcohol/:id
+Частично обновляет алкогольный напиток (только указанные поля). Реализация не идемпотентна.
+
+**Пример запроса:**
+```bash
+curl -X PATCH http://localhost:3000/alcohol/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "price": 3999,
+    "alcoholContent": 42
+  }'
+```
+
+#### DELETE /alcohol/:id
+Удаляет алкогольный напиток по ID.
+
+**Пример запроса:**
+```bash
+curl -X DELETE http://localhost:3000/alcohol/1
+```
+
+### Маршруты для доставок (Deliveries)
+
+#### GET /deliveries
+Возвращает список всех доставок.
+
+**Пример запроса:**
+```bash
+curl http://localhost:3000/deliveries
+```
+
+#### GET /deliveries/:id
+Возвращает конкретную доставку по ее ID.
+
+**Пример запроса:**
+```bash
+curl http://localhost:3000/deliveries/1
+```
+
+#### POST /deliveries
+Создает новую доставку. Если тело запроса пустое, генерируются случайные данные.
+
+**Пример запроса с данными:**
+```bash
+curl -X POST http://localhost:3000/deliveries \
+  -H "Content-Type: application/json" \
+  -d '{
+    "orderId": "ORD-100",
+    "customerName": "Иван Петров",
+    "customerPhone": "+7 (999) 111-22-33",
+    "deliveryAddress": "г. Москва, ул. Тверская, д. 1, кв. 10",
+    "isDelivered": false,
+    "items": [
+      {
+        "alcoholId": "1",
+        "quantity": 2,
+        "price": 3499
+      }
+    ],
+    "deliveryNotes": ["Доставить до 20:00"]
+  }'
+```
+
+**Примечание:** Если `totalAmount` не указан, он вычисляется автоматически на основе `items`.
+
+#### PUT /deliveries/:id
+Полностью обновляет доставку. Если тело запроса пустое, генерируются случайные данные.
+
+**Пример запроса:**
+```bash
+curl -X PUT http://localhost:3000/deliveries/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerName": "Новое имя",
+    ...
+  }'
+```
+
+#### PATCH /deliveries/:id
+Частично обновляет доставку (только указанные поля). Реализация не идемпотентна.
+
+**Пример запроса:**
+```bash
+curl -X PATCH http://localhost:3000/deliveries/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "isDelivered": true,
+    "deliveryDate": "2024-01-20T15:00:00.000Z"
+  }'
+```
+
+#### DELETE /deliveries/:id
+Удаляет доставку по ID.
+
+**Пример запроса:**
+```bash
+curl -X DELETE http://localhost:3000/deliveries/1
 ```
 
 ## Обработка ошибок
