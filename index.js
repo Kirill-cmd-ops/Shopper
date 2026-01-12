@@ -1,6 +1,6 @@
 const app = require('./framework')();
 const DataManager = require('./utils/dataManager');
-const { generateRandomProduct, generateRandomOrder, generateRandomCosmetic, generateRandomReview, generateRandomAlcohol, generateRandomDelivery } = require('./utils/randomGenerator');
+const { generateRandomProduct, generateRandomOrder, generateRandomCosmetic, generateRandomReview, generateRandomAlcohol, generateRandomDelivery, generateRandomPerformance, generateRandomTicket } = require('./utils/randomGenerator');
 const path = require('path');
 
 // Инициализация менеджеров данных
@@ -10,6 +10,8 @@ const cosmeticsManager = new DataManager(path.join(__dirname, 'data', 'cosmetics
 const reviewsManager = new DataManager(path.join(__dirname, 'data', 'reviews.json'));
 const alcoholManager = new DataManager(path.join(__dirname, 'data', 'alcohol.json'));
 const deliveriesManager = new DataManager(path.join(__dirname, 'data', 'deliveries.json'));
+const performancesManager = new DataManager(path.join(__dirname, 'data', 'performances.json'));
+const ticketsManager = new DataManager(path.join(__dirname, 'data', 'tickets.json'));
 
 // Middleware для логирования
 app.use((req, res, next) => {
@@ -904,6 +906,293 @@ app.delete('/deliveries/:id', async (req, res) => {
   }
 });
 
+// ==================== МАРШРУТЫ ДЛЯ СПЕКТАКЛЕЙ (PERFORMANCES) ====================
+
+// GET /performances - получить все спектакли
+app.get('/performances', async (req, res) => {
+  try {
+    const performances = await performancesManager.findAll();
+    res.json(performances);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch performances', message: error.message });
+  }
+});
+
+// GET /performances/:id - получить спектакль по ID
+app.get('/performances/:id', async (req, res) => {
+  try {
+    const performance = await performancesManager.findById(req.params.id);
+    
+    if (!performance) {
+      return res.status(404).json({ error: 'Performance not found' });
+    }
+    
+    res.json(performance);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch performance', message: error.message });
+  }
+});
+
+// POST /performances - создать новый спектакль
+app.post('/performances', async (req, res) => {
+  try {
+    let performanceData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      const allPerformances = await performancesManager.findAll();
+      const newId = String(allPerformances.length + 1);
+      performanceData = {
+        id: newId,
+        ...req.body
+      };
+    } else {
+      const allPerformances = await performancesManager.findAll();
+      const newId = String(allPerformances.length + 1);
+      performanceData = {
+        id: newId,
+        ...generateRandomPerformance()
+      };
+    }
+    
+    if (!performanceData.title || !performanceData.genre || !performanceData.theater || performanceData.duration === undefined) {
+      return res.status(400).json({ error: 'Missing required fields: title, genre, theater, duration' });
+    }
+    
+    const performance = await performancesManager.create(performanceData);
+    res.status(201).json(performance);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create performance', message: error.message });
+  }
+});
+
+// PUT /performances/:id - полностью обновить спектакль
+app.put('/performances/:id', async (req, res) => {
+  try {
+    const existingPerformance = await performancesManager.findById(req.params.id);
+    
+    if (!existingPerformance) {
+      return res.status(404).json({ error: 'Performance not found' });
+    }
+    
+    let updateData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      updateData = req.body;
+    } else {
+      updateData = generateRandomPerformance();
+    }
+    
+    updateData.id = req.params.id;
+    
+    const updatedPerformance = await performancesManager.update(req.params.id, updateData);
+    res.json(updatedPerformance);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update performance', message: error.message });
+  }
+});
+
+// PATCH /performances/:id - частично обновить спектакль
+app.patch('/performances/:id', async (req, res) => {
+  try {
+    const existingPerformance = await performancesManager.findById(req.params.id);
+    
+    if (!existingPerformance) {
+      return res.status(404).json({ error: 'Performance not found' });
+    }
+    
+    let updateData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      updateData = req.body;
+    } else {
+      const fields = ['title', 'duration', 'isPremiere', 'theater'];
+      const randomField = fields[Math.floor(Math.random() * fields.length)];
+      updateData = { 
+        [randomField]: randomField === 'duration' ? Math.floor(Math.random() * 150) + 90 : 
+                      randomField === 'isPremiere' ? Math.random() > 0.5 : 
+                      randomField === 'title' ? `Обновленный спектакль ${Date.now()}` : 
+                      'Новый театр' 
+      };
+    }
+    
+    const updatedPerformance = await performancesManager.partialUpdate(req.params.id, updateData);
+    res.json(updatedPerformance);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update performance', message: error.message });
+  }
+});
+
+// DELETE /performances/:id - удалить спектакль
+app.delete('/performances/:id', async (req, res) => {
+  try {
+    const performance = await performancesManager.findById(req.params.id);
+    
+    if (!performance) {
+      return res.status(404).json({ error: 'Performance not found' });
+    }
+    
+    await performancesManager.delete(req.params.id);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete performance', message: error.message });
+  }
+});
+
+// ==================== МАРШРУТЫ ДЛЯ БИЛЕТОВ (TICKETS) ====================
+
+// GET /tickets - получить все билеты
+app.get('/tickets', async (req, res) => {
+  try {
+    const tickets = await ticketsManager.findAll();
+    res.json(tickets);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch tickets', message: error.message });
+  }
+});
+
+// GET /tickets/:id - получить билет по ID
+app.get('/tickets/:id', async (req, res) => {
+  try {
+    const ticket = await ticketsManager.findById(req.params.id);
+    
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+    
+    res.json(ticket);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch ticket', message: error.message });
+  }
+});
+
+// POST /tickets - создать новый билет
+app.post('/tickets', async (req, res) => {
+  try {
+    let ticketData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      const allTickets = await ticketsManager.findAll();
+      const newId = String(allTickets.length + 1);
+      
+      if (!req.body.performanceId) {
+        const allPerformances = await performancesManager.findAll();
+        const performanceIds = allPerformances.map(p => p.id);
+        if (performanceIds.length === 0) {
+          return res.status(400).json({ error: 'No performances available. Create performances first.' });
+        }
+        const randomTicket = generateRandomTicket(performanceIds);
+        ticketData = {
+          id: newId,
+          ...req.body,
+          performanceId: randomTicket.performanceId
+        };
+      } else {
+        ticketData = {
+          id: newId,
+          ...req.body
+        };
+      }
+    } else {
+      const allTickets = await ticketsManager.findAll();
+      const newId = String(allTickets.length + 1);
+      const allPerformances = await performancesManager.findAll();
+      const performanceIds = allPerformances.map(p => p.id);
+      
+      if (performanceIds.length === 0) {
+        return res.status(400).json({ error: 'No performances available. Create performances first.' });
+      }
+      
+      ticketData = {
+        id: newId,
+        ...generateRandomTicket(performanceIds)
+      };
+    }
+    
+    if (!ticketData.performanceId || !ticketData.seatNumber || !ticketData.section || ticketData.price === undefined) {
+      return res.status(400).json({ error: 'Missing required fields: performanceId, seatNumber, section, price' });
+    }
+    
+    const ticket = await ticketsManager.create(ticketData);
+    res.status(201).json(ticket);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create ticket', message: error.message });
+  }
+});
+
+// PUT /tickets/:id - полностью обновить билет
+app.put('/tickets/:id', async (req, res) => {
+  try {
+    const existingTicket = await ticketsManager.findById(req.params.id);
+    
+    if (!existingTicket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+    
+    let updateData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      updateData = req.body;
+    } else {
+      const allPerformances = await performancesManager.findAll();
+      const performanceIds = allPerformances.map(p => p.id);
+      updateData = generateRandomTicket(performanceIds);
+    }
+    
+    updateData.id = req.params.id;
+    
+    const updatedTicket = await ticketsManager.update(req.params.id, updateData);
+    res.json(updatedTicket);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update ticket', message: error.message });
+  }
+});
+
+// PATCH /tickets/:id - частично обновить билет
+app.patch('/tickets/:id', async (req, res) => {
+  try {
+    const existingTicket = await ticketsManager.findById(req.params.id);
+    
+    if (!existingTicket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+    
+    let updateData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      updateData = req.body;
+    } else {
+      const fields = ['isSold', 'price', 'section'];
+      const randomField = fields[Math.floor(Math.random() * fields.length)];
+      updateData = {
+        [randomField]: randomField === 'isSold' ? Math.random() > 0.5 :
+                      randomField === 'price' ? Math.floor(Math.random() * 10000) + 1000 :
+                      'Партер'
+      };
+    }
+    
+    const updatedTicket = await ticketsManager.partialUpdate(req.params.id, updateData);
+    res.json(updatedTicket);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update ticket', message: error.message });
+  }
+});
+
+// DELETE /tickets/:id - удалить билет
+app.delete('/tickets/:id', async (req, res) => {
+  try {
+    const ticket = await ticketsManager.findById(req.params.id);
+    
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+    
+    await ticketsManager.delete(req.params.id);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete ticket', message: error.message });
+  }
+});
+
 // Запуск сервера
 const PORT = process.env.PORT || 3000;
 
@@ -949,4 +1238,17 @@ app.listen(PORT, () => {
   console.log(`   PUT    /deliveries/:id`);
   console.log(`   PATCH  /deliveries/:id`);
   console.log(`   DELETE /deliveries/:id`);
+  console.log(`\n🎭 Театральная афиша:`);
+  console.log(`   GET    /performances`);
+  console.log(`   GET    /performances/:id`);
+  console.log(`   POST   /performances`);
+  console.log(`   PUT    /performances/:id`);
+  console.log(`   PATCH  /performances/:id`);
+  console.log(`   DELETE /performances/:id`);
+  console.log(`   GET    /tickets`);
+  console.log(`   GET    /tickets/:id`);
+  console.log(`   POST   /tickets`);
+  console.log(`   PUT    /tickets/:id`);
+  console.log(`   PATCH  /tickets/:id`);
+  console.log(`   DELETE /tickets/:id`);
 });

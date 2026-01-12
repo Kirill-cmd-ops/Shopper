@@ -204,6 +204,75 @@ function generateRandomDelivery(alcoholIds) {
   };
 }
 
+function generateRandomPerformance() {
+  const titles = ['Евгений Онегин', 'Лебединое озеро', 'Гамлет', 'Щелкунчик', 'Вишневый сад', 'Кармен', 'Ромео и Джульетта', 'Спящая красавица'];
+  const genres = ['Опера', 'Балет', 'Драма', 'Комедия', 'Мюзикл', 'Трагедия'];
+  const theaters = ['Большой театр', 'Мариинский театр', 'МХТ им. Чехова', 'Театр им. Вахтангова', 'Ленком', 'Современник'];
+  const actors = ['Анна Нетребко', 'Дмитрий Хворостовский', 'Данила Козловский', 'Евгений Миронов', 'Светлана Захарова', 'Константин Хабенский'];
+  
+  const castCount = randomNumber(2, 4);
+  const selectedCast = [];
+  for (let i = 0; i < castCount; i++) {
+    const actor = actors[randomNumber(0, actors.length - 1)];
+    if (!selectedCast.includes(actor)) {
+      selectedCast.push(actor);
+    }
+  }
+  
+  return {
+    title: titles[randomNumber(0, titles.length - 1)],
+    genre: genres[randomNumber(0, genres.length - 1)],
+    theater: theaters[randomNumber(0, theaters.length - 1)],
+    duration: randomNumber(90, 240),
+    isPremiere: randomBoolean(),
+    premiereDate: randomDate().toISOString(),
+    cast: selectedCast.length > 0 ? selectedCast : [actors[0], actors[1]],
+    description: `Театральная постановка в жанре ${genres[randomNumber(0, genres.length - 1)]}`
+  };
+}
+
+function generateRandomTicket(performanceIds) {
+  const sections = ['Партер', 'Бенуар', 'Балкон', 'VIP', 'Амфитеатр', 'Ложа'];
+  const names = ['Иван', 'Мария', 'Алексей', 'Елена', 'Дмитрий', 'Анна', 'Сергей', 'Ольга'];
+  const surnames = ['Петров', 'Сидорова', 'Козлов', 'Волкова', 'Смирнов', 'Иванова', 'Кузнецов', 'Новикова'];
+  const discounts = ['Студенческий', 'Пенсионный', 'Льготный', 'Семейный', 'Детский'];
+  
+  const buyerName = `${names[randomNumber(0, names.length - 1)]} ${surnames[randomNumber(0, surnames.length - 1)]}`;
+  const isSold = randomBoolean();
+  
+  const discountCount = isSold ? randomNumber(0, 2) : 0;
+  const selectedDiscounts = [];
+  for (let i = 0; i < discountCount; i++) {
+    const discount = discounts[randomNumber(0, discounts.length - 1)];
+    if (!selectedDiscounts.includes(discount)) {
+      selectedDiscounts.push(discount);
+    }
+  }
+  
+  const section = sections[randomNumber(0, sections.length - 1)];
+  let basePrice = 2000;
+  if (section === 'VIP') basePrice = 10000;
+  else if (section === 'Партер') basePrice = 4000;
+  else if (section === 'Бенуар') basePrice = 5500;
+  else if (section === 'Балкон') basePrice = 1500;
+  
+  return {
+    performanceId: performanceIds[randomNumber(0, performanceIds.length - 1)],
+    seatNumber: String(randomNumber(1, 30)),
+    row: randomNumber(1, 10),
+    section: section,
+    price: basePrice + randomNumber(-500, 1000),
+    isSold: isSold,
+    saleDate: isSold ? randomDate().toISOString() : null,
+    buyerInfo: isSold ? {
+      name: buyerName,
+      phone: `+7 (999) ${randomNumber(100, 999)}-${randomNumber(10, 99)}-${randomNumber(10, 99)}`,
+      email: `${buyerName.toLowerCase().replace(' ', '.')}@example.com`
+    } : null,
+    discounts: selectedDiscounts
+  };
+}
+
 module.exports = {
   generateRandomProduct,
   generateRandomOrder,
@@ -211,6 +280,8 @@ module.exports = {
   generateRandomReview,
   generateRandomAlcohol,
   generateRandomDelivery,
+  generateRandomPerformance,
+  generateRandomTicket,
   randomString,
   randomNumber,
   randomBoolean,

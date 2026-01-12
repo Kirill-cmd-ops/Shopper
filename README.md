@@ -13,10 +13,11 @@
 
 ## Темы проекта
 
-Проект реализует REST API для трех интернет-магазинов:
+Проект реализует REST API для четырех различных систем:
 1. **Магазин электроники** - управление товарами и заказами
 2. **Магазин косметики** - управление косметическими продуктами и отзывами
 3. **Магазин алкоголя** - управление алкогольными напитками и доставками
+4. **Театральная афиша** - управление спектаклями и билетами
 
 ### Сущности данных
 
@@ -215,6 +216,77 @@
     }
   ],
   "deliveryNotes": ["Доставить до 18:00", "Требуется проверка возраста"]
+}
+```
+
+### Театральная афиша
+
+#### 7. Спектакли (Performances)
+
+Файл: `data/performances.json`
+
+Структура спектакля:
+- **id** (string) - уникальный идентификатор спектакля
+- **title** (string) - название спектакля
+- **genre** (string) - жанр (опера, балет, драма и т.д.)
+- **theater** (string) - название театра
+- **duration** (number) - продолжительность в минутах
+- **isPremiere** (boolean) - является ли премьерой
+- **premiereDate** (Date string) - дата премьеры в формате ISO
+- **cast** (Array) - массив актеров в спектакле
+- **description** (string) - описание спектакля
+
+Пример спектакля:
+```json
+{
+  "id": "1",
+  "title": "Евгений Онегин",
+  "genre": "Опера",
+  "theater": "Большой театр",
+  "duration": 180,
+  "isPremiere": false,
+  "premiereDate": "2023-09-15T19:00:00.000Z",
+  "cast": ["Анна Нетребко", "Дмитрий Хворостовский", "Мария Гулегина"],
+  "description": "Классическая опера П.И. Чайковского по роману А.С. Пушкина"
+}
+```
+
+#### 8. Билеты (Tickets)
+
+Файл: `data/tickets.json`
+
+Структура билета:
+- **id** (string) - уникальный идентификатор билета
+- **performanceId** (string) - ID спектакля
+- **seatNumber** (string) - номер места
+- **row** (number) - ряд
+- **section** (string) - сектор зала (Партер, Бенуар, Балкон и т.д.)
+- **price** (number) - цена билета в рублях
+- **isSold** (boolean) - продан ли билет
+- **saleDate** (Date string) - дата продажи в формате ISO (null если не продан)
+- **buyerInfo** (object) - информация о покупателе (null если не продан)
+  - **name** (string) - имя покупателя
+  - **phone** (string) - телефон
+  - **email** (string) - email
+- **discounts** (Array) - массив примененных скидок
+
+Пример билета:
+```json
+{
+  "id": "1",
+  "performanceId": "1",
+  "seatNumber": "15",
+  "row": 5,
+  "section": "Партер",
+  "price": 3500,
+  "isSold": true,
+  "saleDate": "2024-01-10T12:30:00.000Z",
+  "buyerInfo": {
+    "name": "Иван Петров",
+    "phone": "+7 (999) 123-45-67",
+    "email": "ivan.petrov@example.com"
+  },
+  "discounts": ["Студенческий", "Льготный"]
 }
 ```
 
@@ -696,6 +768,150 @@ curl -X PATCH http://localhost:3000/deliveries/1 \
 **Пример запроса:**
 ```bash
 curl -X DELETE http://localhost:3000/deliveries/1
+```
+
+### Маршруты для спектаклей (Performances)
+
+#### GET /performances
+Возвращает список всех спектаклей.
+
+**Пример запроса:**
+```bash
+curl http://localhost:3000/performances
+```
+
+#### GET /performances/:id
+Возвращает конкретный спектакль по его ID.
+
+**Пример запроса:**
+```bash
+curl http://localhost:3000/performances/1
+```
+
+#### POST /performances
+Создает новый спектакль. Если тело запроса пустое, генерируются случайные данные.
+
+**Пример запроса с данными:**
+```bash
+curl -X POST http://localhost:3000/performances \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Ромео и Джульетта",
+    "genre": "Балет",
+    "theater": "Большой театр",
+    "duration": 140,
+    "isPremiere": true,
+    "premiereDate": "2024-03-15T19:00:00.000Z",
+    "cast": ["Светлана Захарова", "Владимир Васильев"],
+    "description": "Трагическая история любви"
+  }'
+```
+
+#### PUT /performances/:id
+Полностью обновляет спектакль. Если тело запроса пустое, генерируются случайные данные.
+
+**Пример запроса:**
+```bash
+curl -X PUT http://localhost:3000/performances/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Обновленное название",
+    ...
+  }'
+```
+
+#### PATCH /performances/:id
+Частично обновляет спектакль (только указанные поля). Реализация не идемпотентна.
+
+**Пример запроса:**
+```bash
+curl -X PATCH http://localhost:3000/performances/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "duration": 200,
+    "isPremiere": false
+  }'
+```
+
+#### DELETE /performances/:id
+Удаляет спектакль по ID.
+
+**Пример запроса:**
+```bash
+curl -X DELETE http://localhost:3000/performances/1
+```
+
+### Маршруты для билетов (Tickets)
+
+#### GET /tickets
+Возвращает список всех билетов.
+
+**Пример запроса:**
+```bash
+curl http://localhost:3000/tickets
+```
+
+#### GET /tickets/:id
+Возвращает конкретный билет по его ID.
+
+**Пример запроса:**
+```bash
+curl http://localhost:3000/tickets/1
+```
+
+#### POST /tickets
+Создает новый билет. Если тело запроса пустое, генерируются случайные данные.
+
+**Пример запроса с данными:**
+```bash
+curl -X POST http://localhost:3000/tickets \
+  -H "Content-Type: application/json" \
+  -d '{
+    "performanceId": "1",
+    "seatNumber": "10",
+    "row": 3,
+    "section": "Партер",
+    "price": 4000,
+    "isSold": false,
+    "discounts": []
+  }'
+```
+
+**Примечание:** Если `performanceId` не указан, выбирается случайный спектакль из существующих.
+
+#### PUT /tickets/:id
+Полностью обновляет билет. Если тело запроса пустое, генерируются случайные данные.
+
+**Пример запроса:**
+```bash
+curl -X PUT http://localhost:3000/tickets/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "price": 5000,
+    "section": "VIP",
+    ...
+  }'
+```
+
+#### PATCH /tickets/:id
+Частично обновляет билет (только указанные поля). Реализация не идемпотентна.
+
+**Пример запроса:**
+```bash
+curl -X PATCH http://localhost:3000/tickets/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "isSold": true,
+    "price": 3500
+  }'
+```
+
+#### DELETE /tickets/:id
+Удаляет билет по ID.
+
+**Пример запроса:**
+```bash
+curl -X DELETE http://localhost:3000/tickets/1
 ```
 
 ## Обработка ошибок

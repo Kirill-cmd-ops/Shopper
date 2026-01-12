@@ -1,0 +1,88 @@
+[
+  {
+    "id": "2",
+    "performanceId": "2",
+    "seatNumber": "8",
+    "row": 3,
+    "section": "Бенуар",
+    "price": 5500,
+    "isSold": false,
+    "saleDate": null,
+    "buyerInfo": null,
+    "discounts": []
+  },
+  {
+    "id": "3",
+    "performanceId": "1",
+    "seatNumber": "22",
+    "row": 7,
+    "section": "Балкон",
+    "price": 1500,
+    "isSold": true,
+    "saleDate": "2024-01-12T14:20:00.000Z",
+    "buyerInfo": {
+      "name": "Мария Сидорова",
+      "phone": "+7 (999) 234-56-78",
+      "email": "maria.sidorova@example.com"
+    },
+    "discounts": [
+      "Пенсионный"
+    ]
+  },
+  {
+    "id": "4",
+    "performanceId": "3",
+    "seatNumber": "12",
+    "row": 2,
+    "section": "Партер",
+    "price": 4500,
+    "isSold": true,
+    "saleDate": "2024-01-15T10:15:00.000Z",
+    "buyerInfo": {
+      "name": "Алексей Козлов",
+      "phone": "+7 (999) 345-67-89",
+      "email": "alexey.kozlov@example.com"
+    },
+    "discounts": []
+  },
+  {
+    "id": "5",
+    "performanceId": "4",
+    "seatNumber": "5",
+    "row": 1,
+    "section": "VIP",
+    "price": 12000,
+    "isSold": false,
+    "saleDate": null,
+    "buyerInfo": null,
+    "discounts": []
+  },
+  {
+    "id": "6",
+    "performanceId": "5",
+    "seatNumber": "18",
+    "row": 4,
+    "section": "Партер",
+    "price": 4000,
+    "isSold": true,
+    "saleDate": "2024-01-18T16:45:00.000Z",
+    "buyerInfo": {
+      "name": "Елена Волкова",
+      "phone": "+7 (999) 456-78-90",
+      "email": "elena.volkova@example.com"
+    },
+    "discounts": [
+      "Семейный"
+    ]
+  },
+  {
+    "id": "7",
+    "performanceId": "1",
+    "seatNumber": "10",
+    "row": 3,
+    "section": "Партер",
+    "price": 4000,
+    "isSold": false,
+    "discounts": []
+  }
+]
