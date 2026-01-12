@@ -1,0 +1,62 @@
+[
+  {
+    "id": "1",
+    "name": "Увлажняющий крем для лица",
+    "brand": "L'Oreal Paris",
+    "price": 1299,
+    "inStock": true,
+    "releaseDate": "2023-03-15T00:00:00.000Z",
+    "ingredients": ["Гиалуроновая кислота", "Витамин E", "Алоэ вера", "Масло жожоба"],
+    "description": "Интенсивное увлажнение на 24 часа для всех типов кожи"
+  },
+  {
+    "id": "2",
+    "name": "Тональный крем Natural Finish",
+    "brand": "Maybelline",
+    "price": 899,
+    "inStock": true,
+    "releaseDate": "2023-06-20T00:00:00.000Z",
+    "ingredients": ["SPF 15", "Витамин C", "Минеральные пигменты", "Глицерин"],
+    "description": "Легкое покрытие с естественным финишем"
+  },
+  {
+    "id": "3",
+    "name": "Помада Matte Revolution",
+    "brand": "MAC Cosmetics",
+    "price": 2499,
+    "inStock": false,
+    "releaseDate": "2022-11-10T00:00:00.000Z",
+    "ingredients": ["Воск карнауба", "Масло ши", "Витамин E", "Пигменты"],
+    "description": "Матовое покрытие с длительной стойкостью"
+  },
+  {
+    "id": "4",
+    "name": "Тушь для ресниц Volume Express",
+    "brand": "Maybelline",
+    "price": 699,
+    "inStock": true,
+    "releaseDate": "2023-01-05T00:00:00.000Z",
+    "ingredients": ["Воск", "Парафин", "Коллаген", "Кератин"],
+    "description": "Объем и длина ресниц без комочков"
+  },
+  {
+    "id": "5",
+    "name": "Сыворотка с ретинолом",
+    "brand": "The Ordinary",
+    "price": 1599,
+    "inStock": true,
+    "releaseDate": "2023-09-12T00:00:00.000Z",
+    "ingredients": ["Ретинол 0.5%", "Гиалуроновая кислота", "Ниацинамид", "Пептиды"],
+    "description": "Антивозрастной уход для упругости кожи"
+  },
+  {
+    "id": "6",
+    "name": "Палетка теней Nude",
+    "brand": "Urban Decay",
+    "price": 3499,
+    "inStock": true,
+    "releaseDate": "2023-04-18T00:00:00.000Z",
+    "ingredients": ["Минеральные пигменты", "Тальк", "Силикон", "Витамин E"],
+    "description": "12 оттенков для создания естественного макияжа"
+  }
+]

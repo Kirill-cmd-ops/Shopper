@@ -1,11 +1,13 @@
 const app = require('./framework')();
 const DataManager = require('./utils/dataManager');
-const { generateRandomProduct, generateRandomOrder } = require('./utils/randomGenerator');
+const { generateRandomProduct, generateRandomOrder, generateRandomCosmetic, generateRandomReview } = require('./utils/randomGenerator');
 const path = require('path');
 
 // Инициализация менеджеров данных
 const productsManager = new DataManager(path.join(__dirname, 'data', 'products.json'));
 const ordersManager = new DataManager(path.join(__dirname, 'data', 'orders.json'));
+const cosmeticsManager = new DataManager(path.join(__dirname, 'data', 'cosmetics.json'));
+const reviewsManager = new DataManager(path.join(__dirname, 'data', 'reviews.json'));
 
 // Middleware для логирования
 app.use((req, res, next) => {
@@ -323,12 +325,299 @@ app.delete('/orders/:id', async (req, res) => {
   }
 });
 
+// ==================== МАРШРУТЫ ДЛЯ КОСМЕТИКИ (COSMETICS) ====================
+
+// GET /cosmetics - получить всю косметику
+app.get('/cosmetics', async (req, res) => {
+  try {
+    const cosmetics = await cosmeticsManager.findAll();
+    res.json(cosmetics);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch cosmetics', message: error.message });
+  }
+});
+
+// GET /cosmetics/:id - получить косметику по ID
+app.get('/cosmetics/:id', async (req, res) => {
+  try {
+    const cosmetic = await cosmeticsManager.findById(req.params.id);
+    
+    if (!cosmetic) {
+      return res.status(404).json({ error: 'Cosmetic not found' });
+    }
+    
+    res.json(cosmetic);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch cosmetic', message: error.message });
+  }
+});
+
+// POST /cosmetics - создать новую косметику
+app.post('/cosmetics', async (req, res) => {
+  try {
+    let cosmeticData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      const allCosmetics = await cosmeticsManager.findAll();
+      const newId = String(allCosmetics.length + 1);
+      cosmeticData = {
+        id: newId,
+        ...req.body
+      };
+    } else {
+      const allCosmetics = await cosmeticsManager.findAll();
+      const newId = String(allCosmetics.length + 1);
+      cosmeticData = {
+        id: newId,
+        ...generateRandomCosmetic()
+      };
+    }
+    
+    if (!cosmeticData.name || !cosmeticData.brand || cosmeticData.price === undefined) {
+      return res.status(400).json({ error: 'Missing required fields: name, brand, price' });
+    }
+    
+    const cosmetic = await cosmeticsManager.create(cosmeticData);
+    res.status(201).json(cosmetic);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create cosmetic', message: error.message });
+  }
+});
+
+// PUT /cosmetics/:id - полностью обновить косметику
+app.put('/cosmetics/:id', async (req, res) => {
+  try {
+    const existingCosmetic = await cosmeticsManager.findById(req.params.id);
+    
+    if (!existingCosmetic) {
+      return res.status(404).json({ error: 'Cosmetic not found' });
+    }
+    
+    let updateData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      updateData = req.body;
+    } else {
+      updateData = generateRandomCosmetic();
+    }
+    
+    updateData.id = req.params.id;
+    
+    const updatedCosmetic = await cosmeticsManager.update(req.params.id, updateData);
+    res.json(updatedCosmetic);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update cosmetic', message: error.message });
+  }
+});
+
+// PATCH /cosmetics/:id - частично обновить косметику
+app.patch('/cosmetics/:id', async (req, res) => {
+  try {
+    const existingCosmetic = await cosmeticsManager.findById(req.params.id);
+    
+    if (!existingCosmetic) {
+      return res.status(404).json({ error: 'Cosmetic not found' });
+    }
+    
+    let updateData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      updateData = req.body;
+    } else {
+      const fields = ['name', 'price', 'inStock', 'brand'];
+      const randomField = fields[Math.floor(Math.random() * fields.length)];
+      updateData = { 
+        [randomField]: randomField === 'price' ? Math.floor(Math.random() * 5000) : 
+                      randomField === 'inStock' ? Math.random() > 0.5 : 
+                      randomField === 'name' ? `Обновленная косметика ${Date.now()}` : 'Новый бренд' 
+      };
+    }
+    
+    const updatedCosmetic = await cosmeticsManager.partialUpdate(req.params.id, updateData);
+    res.json(updatedCosmetic);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update cosmetic', message: error.message });
+  }
+});
+
+// DELETE /cosmetics/:id - удалить косметику
+app.delete('/cosmetics/:id', async (req, res) => {
+  try {
+    const cosmetic = await cosmeticsManager.findById(req.params.id);
+    
+    if (!cosmetic) {
+      return res.status(404).json({ error: 'Cosmetic not found' });
+    }
+    
+    await cosmeticsManager.delete(req.params.id);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete cosmetic', message: error.message });
+  }
+});
+
+// ==================== МАРШРУТЫ ДЛЯ ОТЗЫВОВ (REVIEWS) ====================
+
+// GET /reviews - получить все отзывы
+app.get('/reviews', async (req, res) => {
+  try {
+    const reviews = await reviewsManager.findAll();
+    res.json(reviews);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch reviews', message: error.message });
+  }
+});
+
+// GET /reviews/:id - получить отзыв по ID
+app.get('/reviews/:id', async (req, res) => {
+  try {
+    const review = await reviewsManager.findById(req.params.id);
+    
+    if (!review) {
+      return res.status(404).json({ error: 'Review not found' });
+    }
+    
+    res.json(review);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch review', message: error.message });
+  }
+});
+
+// POST /reviews - создать новый отзыв
+app.post('/reviews', async (req, res) => {
+  try {
+    let reviewData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      const allReviews = await reviewsManager.findAll();
+      const newId = String(allReviews.length + 1);
+      
+      if (!req.body.productId) {
+        const allCosmetics = await cosmeticsManager.findAll();
+        const cosmeticIds = allCosmetics.map(c => c.id);
+        if (cosmeticIds.length === 0) {
+          return res.status(400).json({ error: 'No cosmetics available. Create cosmetics first.' });
+        }
+        const randomReview = generateRandomReview(cosmeticIds);
+        reviewData = {
+          id: newId,
+          ...req.body,
+          productId: randomReview.productId
+        };
+      } else {
+        reviewData = {
+          id: newId,
+          ...req.body
+        };
+      }
+    } else {
+      const allReviews = await reviewsManager.findAll();
+      const newId = String(allReviews.length + 1);
+      const allCosmetics = await cosmeticsManager.findAll();
+      const cosmeticIds = allCosmetics.map(c => c.id);
+      
+      if (cosmeticIds.length === 0) {
+        return res.status(400).json({ error: 'No cosmetics available. Create cosmetics first.' });
+      }
+      
+      reviewData = {
+        id: newId,
+        ...generateRandomReview(cosmeticIds)
+      };
+    }
+    
+    if (!reviewData.productId || !reviewData.customerName || reviewData.rating === undefined) {
+      return res.status(400).json({ error: 'Missing required fields: productId, customerName, rating' });
+    }
+    
+    const review = await reviewsManager.create(reviewData);
+    res.status(201).json(review);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create review', message: error.message });
+  }
+});
+
+// PUT /reviews/:id - полностью обновить отзыв
+app.put('/reviews/:id', async (req, res) => {
+  try {
+    const existingReview = await reviewsManager.findById(req.params.id);
+    
+    if (!existingReview) {
+      return res.status(404).json({ error: 'Review not found' });
+    }
+    
+    let updateData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      updateData = req.body;
+    } else {
+      const allCosmetics = await cosmeticsManager.findAll();
+      const cosmeticIds = allCosmetics.map(c => c.id);
+      updateData = generateRandomReview(cosmeticIds);
+    }
+    
+    updateData.id = req.params.id;
+    
+    const updatedReview = await reviewsManager.update(req.params.id, updateData);
+    res.json(updatedReview);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update review', message: error.message });
+  }
+});
+
+// PATCH /reviews/:id - частично обновить отзыв
+app.patch('/reviews/:id', async (req, res) => {
+  try {
+    const existingReview = await reviewsManager.findById(req.params.id);
+    
+    if (!existingReview) {
+      return res.status(404).json({ error: 'Review not found' });
+    }
+    
+    let updateData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      updateData = req.body;
+    } else {
+      const fields = ['rating', 'isVerified', 'comment'];
+      const randomField = fields[Math.floor(Math.random() * fields.length)];
+      updateData = {
+        [randomField]: randomField === 'rating' ? Math.floor(Math.random() * 5) + 1 :
+                      randomField === 'isVerified' ? Math.random() > 0.5 :
+                      `Обновленный комментарий ${Date.now()}`
+      };
+    }
+    
+    const updatedReview = await reviewsManager.partialUpdate(req.params.id, updateData);
+    res.json(updatedReview);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update review', message: error.message });
+  }
+});
+
+// DELETE /reviews/:id - удалить отзыв
+app.delete('/reviews/:id', async (req, res) => {
+  try {
+    const review = await reviewsManager.findById(req.params.id);
+    
+    if (!review) {
+      return res.status(404).json({ error: 'Review not found' });
+    }
+    
+    await reviewsManager.delete(req.params.id);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete review', message: error.message });
+  }
+});
+
 // Запуск сервера
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Сервер запущен на порту ${PORT}`);
   console.log(`📦 Доступные эндпоинты:`);
+  console.log(`\n🛍️  Магазин электроники:`);
   console.log(`   GET    /products`);
   console.log(`   GET    /products/:id`);
   console.log(`   POST   /products`);
@@ -341,4 +630,17 @@ app.listen(PORT, () => {
   console.log(`   PUT    /orders/:id`);
   console.log(`   PATCH  /orders/:id`);
   console.log(`   DELETE /orders/:id`);
+  console.log(`\n💄 Магазин косметики:`);
+  console.log(`   GET    /cosmetics`);
+  console.log(`   GET    /cosmetics/:id`);
+  console.log(`   POST   /cosmetics`);
+  console.log(`   PUT    /cosmetics/:id`);
+  console.log(`   PATCH  /cosmetics/:id`);
+  console.log(`   DELETE /cosmetics/:id`);
+  console.log(`   GET    /reviews`);
+  console.log(`   GET    /reviews/:id`);
+  console.log(`   POST   /reviews`);
+  console.log(`   PUT    /reviews/:id`);
+  console.log(`   PATCH  /reviews/:id`);
+  console.log(`   DELETE /reviews/:id`);
 });

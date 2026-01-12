@@ -73,9 +73,69 @@ function generateRandomOrder(productIds) {
   };
 }
 
+function generateRandomCosmetic() {
+  const brands = ['L\'Oreal Paris', 'Maybelline', 'MAC Cosmetics', 'The Ordinary', 'Urban Decay', 'NYX', 'Revlon', 'Estée Lauder'];
+  const productTypes = ['Крем для лица', 'Тональный крем', 'Помада', 'Тушь для ресниц', 'Сыворотка', 'Палетка теней', 'Пудра', 'Консилер'];
+  const ingredients = ['Гиалуроновая кислота', 'Витамин E', 'Ретинол', 'Ниацинамид', 'Коллаген', 'SPF', 'Алоэ вера', 'Масло жожоба'];
+  
+  const ingredientCount = randomNumber(3, 6);
+  const selectedIngredients = [];
+  for (let i = 0; i < ingredientCount; i++) {
+    const ing = ingredients[randomNumber(0, ingredients.length - 1)];
+    if (!selectedIngredients.includes(ing)) {
+      selectedIngredients.push(ing);
+    }
+  }
+  
+  return {
+    name: `${productTypes[randomNumber(0, productTypes.length - 1)]} ${randomString(5)}`,
+    brand: brands[randomNumber(0, brands.length - 1)],
+    price: randomNumber(500, 5000),
+    inStock: randomBoolean(),
+    releaseDate: randomDate().toISOString(),
+    ingredients: selectedIngredients.length > 0 ? selectedIngredients : ingredients.slice(0, 3),
+    description: `Качественный продукт для ухода и макияжа от бренда ${brands[randomNumber(0, brands.length - 1)]}`
+  };
+}
+
+function generateRandomReview(cosmeticIds) {
+  const names = ['Анна', 'Мария', 'Елена', 'Ольга', 'Ирина', 'Светлана', 'Татьяна', 'Наталья'];
+  const surnames = ['Смирнова', 'Петрова', 'Козлова', 'Волкова', 'Новикова', 'Иванова', 'Кузнецова', 'Морозова'];
+  const tags = ['Качество', 'Рекомендую', 'Увлажнение', 'Стойкость', 'Естественный вид', 'Эффект', 'Доступная цена', 'Лучший продукт'];
+  const comments = [
+    'Отличный продукт! Результат превзошел ожидания.',
+    'Хорошее качество за свою цену. Рекомендую к покупке.',
+    'Использую уже месяц, вижу положительные изменения.',
+    'Качественный продукт, но цена немного завышена.',
+    'Потрясающий эффект! Буду покупать еще.'
+  ];
+  
+  const customerName = `${names[randomNumber(0, names.length - 1)]} ${surnames[randomNumber(0, surnames.length - 1)]}`;
+  const tagCount = randomNumber(1, 3);
+  const selectedTags = [];
+  for (let i = 0; i < tagCount; i++) {
+    const tag = tags[randomNumber(0, tags.length - 1)];
+    if (!selectedTags.includes(tag)) {
+      selectedTags.push(tag);
+    }
+  }
+  
+  return {
+    productId: cosmeticIds[randomNumber(0, cosmeticIds.length - 1)],
+    customerName,
+    rating: randomNumber(1, 5),
+    isVerified: randomBoolean(),
+    reviewDate: randomDate().toISOString(),
+    tags: selectedTags.length > 0 ? selectedTags : [tags[0]],
+    comment: comments[randomNumber(0, comments.length - 1)]
+  };
+}
+
 module.exports = {
   generateRandomProduct,
   generateRandomOrder,
+  generateRandomCosmetic,
+  generateRandomReview,
   randomString,
   randomNumber,
   randomBoolean,
