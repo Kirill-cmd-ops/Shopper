@@ -1,6 +1,6 @@
 const app = require('./framework')();
 const DataManager = require('./utils/dataManager');
-const { generateRandomProduct, generateRandomOrder, generateRandomCosmetic, generateRandomReview } = require('./utils/randomGenerator');
+const { generateRandomProduct, generateRandomOrder, generateRandomCosmetic, generateRandomReview, generateRandomAlcohol, generateRandomDelivery } = require('./utils/randomGenerator');
 const path = require('path');
 
 // Инициализация менеджеров данных
@@ -8,6 +8,8 @@ const productsManager = new DataManager(path.join(__dirname, 'data', 'products.j
 const ordersManager = new DataManager(path.join(__dirname, 'data', 'orders.json'));
 const cosmeticsManager = new DataManager(path.join(__dirname, 'data', 'cosmetics.json'));
 const reviewsManager = new DataManager(path.join(__dirname, 'data', 'reviews.json'));
+const alcoholManager = new DataManager(path.join(__dirname, 'data', 'alcohol.json'));
+const deliveriesManager = new DataManager(path.join(__dirname, 'data', 'deliveries.json'));
 
 // Middleware для логирования
 app.use((req, res, next) => {
@@ -611,6 +613,297 @@ app.delete('/reviews/:id', async (req, res) => {
   }
 });
 
+// ==================== МАРШРУТЫ ДЛЯ АЛКОГОЛЯ (ALCOHOL) ====================
+
+// GET /alcohol - получить весь алкоголь
+app.get('/alcohol', async (req, res) => {
+  try {
+    const alcohol = await alcoholManager.findAll();
+    res.json(alcohol);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch alcohol', message: error.message });
+  }
+});
+
+// GET /alcohol/:id - получить алкоголь по ID
+app.get('/alcohol/:id', async (req, res) => {
+  try {
+    const alcohol = await alcoholManager.findById(req.params.id);
+    
+    if (!alcohol) {
+      return res.status(404).json({ error: 'Alcohol not found' });
+    }
+    
+    res.json(alcohol);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch alcohol', message: error.message });
+  }
+});
+
+// POST /alcohol - создать новый алкоголь
+app.post('/alcohol', async (req, res) => {
+  try {
+    let alcoholData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      const allAlcohol = await alcoholManager.findAll();
+      const newId = String(allAlcohol.length + 1);
+      alcoholData = {
+        id: newId,
+        ...req.body
+      };
+    } else {
+      const allAlcohol = await alcoholManager.findAll();
+      const newId = String(allAlcohol.length + 1);
+      alcoholData = {
+        id: newId,
+        ...generateRandomAlcohol()
+      };
+    }
+    
+    if (!alcoholData.name || !alcoholData.type || !alcoholData.brand || alcoholData.price === undefined) {
+      return res.status(400).json({ error: 'Missing required fields: name, type, brand, price' });
+    }
+    
+    const alcohol = await alcoholManager.create(alcoholData);
+    res.status(201).json(alcohol);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create alcohol', message: error.message });
+  }
+});
+
+// PUT /alcohol/:id - полностью обновить алкоголь
+app.put('/alcohol/:id', async (req, res) => {
+  try {
+    const existingAlcohol = await alcoholManager.findById(req.params.id);
+    
+    if (!existingAlcohol) {
+      return res.status(404).json({ error: 'Alcohol not found' });
+    }
+    
+    let updateData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      updateData = req.body;
+    } else {
+      updateData = generateRandomAlcohol();
+    }
+    
+    updateData.id = req.params.id;
+    
+    const updatedAlcohol = await alcoholManager.update(req.params.id, updateData);
+    res.json(updatedAlcohol);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update alcohol', message: error.message });
+  }
+});
+
+// PATCH /alcohol/:id - частично обновить алкоголь
+app.patch('/alcohol/:id', async (req, res) => {
+  try {
+    const existingAlcohol = await alcoholManager.findById(req.params.id);
+    
+    if (!existingAlcohol) {
+      return res.status(404).json({ error: 'Alcohol not found' });
+    }
+    
+    let updateData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      updateData = req.body;
+    } else {
+      const fields = ['name', 'price', 'inStock', 'alcoholContent'];
+      const randomField = fields[Math.floor(Math.random() * fields.length)];
+      updateData = { 
+        [randomField]: randomField === 'price' ? Math.floor(Math.random() * 20000) : 
+                      randomField === 'inStock' ? Math.random() > 0.5 : 
+                      randomField === 'alcoholContent' ? Math.floor(Math.random() * 40) + 10 :
+                      randomField === 'name' ? `Обновленный напиток ${Date.now()}` : 'Новое название' 
+      };
+    }
+    
+    const updatedAlcohol = await alcoholManager.partialUpdate(req.params.id, updateData);
+    res.json(updatedAlcohol);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update alcohol', message: error.message });
+  }
+});
+
+// DELETE /alcohol/:id - удалить алкоголь
+app.delete('/alcohol/:id', async (req, res) => {
+  try {
+    const alcohol = await alcoholManager.findById(req.params.id);
+    
+    if (!alcohol) {
+      return res.status(404).json({ error: 'Alcohol not found' });
+    }
+    
+    await alcoholManager.delete(req.params.id);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete alcohol', message: error.message });
+  }
+});
+
+// ==================== МАРШРУТЫ ДЛЯ ДОСТАВОК (DELIVERIES) ====================
+
+// GET /deliveries - получить все доставки
+app.get('/deliveries', async (req, res) => {
+  try {
+    const deliveries = await deliveriesManager.findAll();
+    res.json(deliveries);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch deliveries', message: error.message });
+  }
+});
+
+// GET /deliveries/:id - получить доставку по ID
+app.get('/deliveries/:id', async (req, res) => {
+  try {
+    const delivery = await deliveriesManager.findById(req.params.id);
+    
+    if (!delivery) {
+      return res.status(404).json({ error: 'Delivery not found' });
+    }
+    
+    res.json(delivery);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch delivery', message: error.message });
+  }
+});
+
+// POST /deliveries - создать новую доставку
+app.post('/deliveries', async (req, res) => {
+  try {
+    let deliveryData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      const allDeliveries = await deliveriesManager.findAll();
+      const newId = String(allDeliveries.length + 1);
+      
+      if (!req.body.items) {
+        const allAlcohol = await alcoholManager.findAll();
+        const alcoholIds = allAlcohol.map(a => a.id);
+        if (alcoholIds.length === 0) {
+          return res.status(400).json({ error: 'No alcohol available. Create alcohol first.' });
+        }
+        const randomDelivery = generateRandomDelivery(alcoholIds);
+        deliveryData = {
+          id: newId,
+          ...req.body,
+          items: randomDelivery.items
+        };
+      } else {
+        deliveryData = {
+          id: newId,
+          ...req.body
+        };
+      }
+    } else {
+      const allDeliveries = await deliveriesManager.findAll();
+      const newId = String(allDeliveries.length + 1);
+      const allAlcohol = await alcoholManager.findAll();
+      const alcoholIds = allAlcohol.map(a => a.id);
+      
+      if (alcoholIds.length === 0) {
+        return res.status(400).json({ error: 'No alcohol available. Create alcohol first.' });
+      }
+      
+      deliveryData = {
+        id: newId,
+        ...generateRandomDelivery(alcoholIds)
+      };
+    }
+    
+    if (!deliveryData.customerName || !deliveryData.deliveryAddress || !deliveryData.items || deliveryData.items.length === 0) {
+      return res.status(400).json({ error: 'Missing required fields: customerName, deliveryAddress, items' });
+    }
+    
+    if (!deliveryData.totalAmount) {
+      deliveryData.totalAmount = deliveryData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    }
+    
+    const delivery = await deliveriesManager.create(deliveryData);
+    res.status(201).json(delivery);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create delivery', message: error.message });
+  }
+});
+
+// PUT /deliveries/:id - полностью обновить доставку
+app.put('/deliveries/:id', async (req, res) => {
+  try {
+    const existingDelivery = await deliveriesManager.findById(req.params.id);
+    
+    if (!existingDelivery) {
+      return res.status(404).json({ error: 'Delivery not found' });
+    }
+    
+    let updateData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      updateData = req.body;
+    } else {
+      const allAlcohol = await alcoholManager.findAll();
+      const alcoholIds = allAlcohol.map(a => a.id);
+      updateData = generateRandomDelivery(alcoholIds);
+    }
+    
+    updateData.id = req.params.id;
+    
+    const updatedDelivery = await deliveriesManager.update(req.params.id, updateData);
+    res.json(updatedDelivery);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update delivery', message: error.message });
+  }
+});
+
+// PATCH /deliveries/:id - частично обновить доставку
+app.patch('/deliveries/:id', async (req, res) => {
+  try {
+    const existingDelivery = await deliveriesManager.findById(req.params.id);
+    
+    if (!existingDelivery) {
+      return res.status(404).json({ error: 'Delivery not found' });
+    }
+    
+    let updateData;
+    
+    if (req.body && Object.keys(req.body).length > 0) {
+      updateData = req.body;
+    } else {
+      const fields = ['isDelivered', 'deliveryAddress', 'deliveryDate'];
+      const randomField = fields[Math.floor(Math.random() * fields.length)];
+      updateData = {
+        [randomField]: randomField === 'isDelivered' ? Math.random() > 0.5 :
+                      randomField === 'deliveryAddress' ? `г. Москва, ул. Новая, д. ${Math.floor(Math.random() * 100)}, кв. ${Math.floor(Math.random() * 100)}` :
+                      new Date().toISOString()
+      };
+    }
+    
+    const updatedDelivery = await deliveriesManager.partialUpdate(req.params.id, updateData);
+    res.json(updatedDelivery);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update delivery', message: error.message });
+  }
+});
+
+// DELETE /deliveries/:id - удалить доставку
+app.delete('/deliveries/:id', async (req, res) => {
+  try {
+    const delivery = await deliveriesManager.findById(req.params.id);
+    
+    if (!delivery) {
+      return res.status(404).json({ error: 'Delivery not found' });
+    }
+    
+    await deliveriesManager.delete(req.params.id);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete delivery', message: error.message });
+  }
+});
+
 // Запуск сервера
 const PORT = process.env.PORT || 3000;
 
@@ -643,4 +936,17 @@ app.listen(PORT, () => {
   console.log(`   PUT    /reviews/:id`);
   console.log(`   PATCH  /reviews/:id`);
   console.log(`   DELETE /reviews/:id`);
+  console.log(`\n🍷 Магазин алкоголя:`);
+  console.log(`   GET    /alcohol`);
+  console.log(`   GET    /alcohol/:id`);
+  console.log(`   POST   /alcohol`);
+  console.log(`   PUT    /alcohol/:id`);
+  console.log(`   PATCH  /alcohol/:id`);
+  console.log(`   DELETE /alcohol/:id`);
+  console.log(`   GET    /deliveries`);
+  console.log(`   GET    /deliveries/:id`);
+  console.log(`   POST   /deliveries`);
+  console.log(`   PUT    /deliveries/:id`);
+  console.log(`   PATCH  /deliveries/:id`);
+  console.log(`   DELETE /deliveries/:id`);
 });
