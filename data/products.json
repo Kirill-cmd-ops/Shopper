@@ -1,0 +1,52 @@
+[
+  {
+    "id": "1",
+    "name": "iPhone 15 Pro",
+    "category": "Смартфоны",
+    "price": 99999,
+    "inStock": true,
+    "releaseDate": "2023-09-22T00:00:00.000Z",
+    "specifications": ["6.1 дюйм", "A17 Pro", "256GB", "Титановый корпус"],
+    "description": "Флагманский смартфон от Apple"
+  },
+  {
+    "id": "2",
+    "name": "Samsung Galaxy S24 Ultra",
+    "category": "Смартфоны",
+    "price": 89999,
+    "inStock": true,
+    "releaseDate": "2024-01-17T00:00:00.000Z",
+    "specifications": ["6.8 дюйм", "Snapdragon 8 Gen 3", "512GB", "S Pen"],
+    "description": "Мощный смартфон с поддержкой стилуса"
+  },
+  {
+    "id": "3",
+    "name": "MacBook Pro 16",
+    "category": "Ноутбуки",
+    "price": 249999,
+    "inStock": false,
+    "releaseDate": "2023-11-07T00:00:00.000Z",
+    "specifications": ["M3 Max", "36GB RAM", "1TB SSD", "Liquid Retina XDR"],
+    "description": "Профессиональный ноутбук для работы"
+  },
+  {
+    "id": "4",
+    "name": "Sony WH-1000XM5",
+    "category": "Наушники",
+    "price": 29999,
+    "inStock": true,
+    "releaseDate": "2022-05-12T00:00:00.000Z",
+    "specifications": ["Активное шумоподавление", "30 часов работы", "Bluetooth 5.2", "Быстрая зарядка"],
+    "description": "Премиальные беспроводные наушники"
+  },
+  {
+    "id": "5",
+    "name": "Nintendo Switch OLED",
+    "category": "Игровые консоли",
+    "price": 34999,
+    "inStock": true,
+    "releaseDate": "2021-10-08T00:00:00.000Z",
+    "specifications": ["7 дюйм OLED экран", "64GB памяти", "Joy-Con", "Док-станция"],
+    "description": "Гибридная игровая консоль"
+  }
+]

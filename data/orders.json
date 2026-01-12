@@ -1,0 +1,87 @@
+[
+  {
+    "id": "1",
+    "customerName": "Иван Петров",
+    "customerEmail": "ivan.petrov@example.com",
+    "totalAmount": 129998,
+    "isPaid": true,
+    "orderDate": "2024-01-15T10:30:00.000Z",
+    "items": [
+      {
+        "productId": "1",
+        "quantity": 1,
+        "price": 99999
+      },
+      {
+        "productId": "4",
+        "quantity": 1,
+        "price": 29999
+      }
+    ],
+    "status": "Доставлен"
+  },
+  {
+    "id": "2",
+    "customerName": "Мария Сидорова",
+    "customerEmail": "maria.sidorova@example.com",
+    "totalAmount": 89999,
+    "isPaid": true,
+    "orderDate": "2024-01-20T14:45:00.000Z",
+    "items": [
+      {
+        "productId": "2",
+        "quantity": 1,
+        "price": 89999
+      }
+    ],
+    "status": "В обработке"
+  },
+  {
+    "id": "3",
+    "customerName": "Алексей Козлов",
+    "customerEmail": "alexey.kozlov@example.com",
+    "totalAmount": 34999,
+    "isPaid": false,
+    "orderDate": "2024-01-25T09:15:00.000Z",
+    "items": [
+      {
+        "productId": "5",
+        "quantity": 1,
+        "price": 34999
+      }
+    ],
+    "status": "Ожидает оплаты"
+  },
+  {
+    "id": "4",
+    "customerName": "Елена Волкова",
+    "customerEmail": "elena.volkova@example.com",
+    "totalAmount": 249999,
+    "isPaid": true,
+    "orderDate": "2024-01-18T16:20:00.000Z",
+    "items": [
+      {
+        "productId": "3",
+        "quantity": 1,
+        "price": 249999
+      }
+    ],
+    "status": "Отменен"
+  },
+  {
+    "id": "5",
+    "customerName": "Дмитрий Смирнов",
+    "customerEmail": "dmitry.smirnov@example.com",
+    "totalAmount": 59998,
+    "isPaid": true,
+    "orderDate": "2024-01-22T11:00:00.000Z",
+    "items": [
+      {
+        "productId": "4",
+        "quantity": 2,
+        "price": 29999
+      }
+    ],
+    "status": "Доставлен"
+  }
+]
